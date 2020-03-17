@@ -18,7 +18,7 @@ class Routes extends React.Component {
         }*/
     }
     state = {
-        routeName: 'Login'
+        routeName: 'Home'
     }
     render() {
         const MainStack = createStackNavigator(

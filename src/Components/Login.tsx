@@ -1,11 +1,8 @@
-import React from 'react'
-import { Text, View, Image, TouchableOpacity, ActivityIndicator, StyleSheet, } from 'react-native'
-import Auth0 from 'react-native-auth0';
+import React from 'react';
+import { Text, View, Image, TouchableOpacity, ActivityIndicator, StyleSheet, } from 'react-native';
 import { connect } from 'react-redux';
 import { runLogin } from "../Actions/mainAction";
 import { colors } from '../Styles/Colors';
-
-const auth0 = new Auth0({ domain: 'dev-s20x--oa.auth0.com', clientId: 'ElxDuYqrFkdYqkWlUFAF3J4n6COOPFAA' });
 
 interface Props {
   runLogin: Function,
@@ -34,28 +31,9 @@ class Login extends React.Component<Props, State> {
       } else {
         this.setState({ loading: false })
       }
-      /*auth0
-      .webAuth
-      .authorize({scope: 'openid profile email'})
-      .then(credentials =>
-        // Successfully authenticated
-        // Store the accessToken
-        this.setState({ accessToken: credentials.accessToken })
-      )
-      .catch(error => console.log(error));*/
-      /*auth0.webAuth
-      .clearSession({})
-      .then(success => {
-          Alert.alert(
-              'Logged out!'
-          );
-          this.setState({ accessToken: null });
-      })
-      .catch(error => {
-          console.log('Log out cancelled');
-      });*/
     }
     render() {
+      const { loading } = this.state;
         return (
             <View style={styles.mainContainer}>
                 <Image 
@@ -63,7 +41,7 @@ class Login extends React.Component<Props, State> {
                 style={styles.imageStyle}
                 />
                 {
-                  (this.state.loading === false) && 
+                  (loading === false) && 
                   <TouchableOpacity 
                   activeOpacity={.7}
                   style={styles.buttonStyle}
@@ -77,7 +55,7 @@ class Login extends React.Component<Props, State> {
                   </TouchableOpacity>
                 }
                 {
-                  (this.state.loading === true) &&
+                  (loading === true) &&
                   <ActivityIndicator 
                   size="large"
                   color={colors.white}

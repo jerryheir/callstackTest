@@ -1,0 +1,52 @@
+[
+    {
+        "title": "ID",
+        "order": "Ascending",
+        "display": "ID (Ascending)"
+    },
+    {
+        "title": "ID",
+        "order": "Descending",
+        "display": "ID (Descending)"
+    },
+    {
+        "title": "Repo",
+        "order": "Ascending",
+        "display": "Repo (Ascending)"
+    },
+    {
+        "title": "Repo",
+        "order": "Descending",
+        "display": "Repo (Descending)"
+    },
+    {
+        "title": "Name",
+        "order": "Ascending",
+        "display": "Name (Ascending)"
+    },
+    {
+        "title": "Name",
+        "order": "Descending",
+        "display": "Name (Descending)"
+    },
+    {
+        "title": "Stars",
+        "order": "Ascending",
+        "display": "Stars (Ascending)"
+    },
+    {
+        "title": "Stars",
+        "order": "Descending",
+        "display": "Stars (Descending)"
+    },
+    {
+        "title": "Time",
+        "order": "Ascending",
+        "display": "Time created (Ascending)"
+    },
+    {
+        "title": "Time",
+        "order": "Descending",
+        "display": "Time created (Descending)"
+    }
+]
