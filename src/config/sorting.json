@@ -12,12 +12,12 @@
     {
         "title": "Repo",
         "order": "Ascending",
-        "display": "Repo (Ascending)"
+        "display": "Repo Title (Ascending)"
     },
     {
         "title": "Repo",
         "order": "Descending",
-        "display": "Repo (Descending)"
+        "display": "Repo Title (Descending)"
     },
     {
         "title": "Name",

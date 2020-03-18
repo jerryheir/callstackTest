@@ -5,7 +5,7 @@ import { runLogin } from "../Actions/mainAction";
 import { colors } from '../Styles/Colors';
 
 interface Props {
-  runLogin: Function,
+  runLogin: Function;
   navigation: {
     navigate: Function
   }
@@ -58,7 +58,7 @@ class Login extends React.Component<Props, State> {
                   (loading === true) &&
                   <ActivityIndicator 
                   size="large"
-                  color={colors.white}
+                  color={colors.primary}
                   style={styles.activity}
                   />
                 }
@@ -76,7 +76,7 @@ export default connect(mapStateToProps, { runLogin })(Login);
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: colors.gray,
+    backgroundColor: colors.lightGray,
     justifyContent: 'center',
     alignItems: 'center'
   },

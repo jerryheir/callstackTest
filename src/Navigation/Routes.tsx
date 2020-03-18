@@ -1,24 +1,38 @@
 import React from 'react';
+import { View, ActivityIndicator } from "react-native";
 import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from "react-navigation";
+import { connect } from 'react-redux';
 import * as Keychain from 'react-native-keychain';
+import { searchGithub, getUser, sortRepo } from "../Actions/mainAction";
 import Login from '../Components/Login'
 import Home from '../Components/Home';
+import Details from '../Components/Details';
+import { colors } from '../Styles/Colors';
 
-class Routes extends React.Component {
+interface Props {
+  searchGithub: Function;
+  getUser: Function;
+}
+
+interface State {
+    routeName: String
+}
+
+class Routes extends React.Component<Props, State> {
     async componentDidMount(){
-        /*const data = await Keychain.getGenericPassword();
+        const { searchGithub, getUser } = this.props;
+        await searchGithub('a');
+        const data = await Keychain.getGenericPassword();
         if (data){
-            const response = await this.props.runLogin({ "username": data.username, "password": data.password })
-            if (response && response._data && response._data.reg_status === "SUBSCRIBED"){
-                this.setState({ routeName: 'Landing' })
-            } else { this.setState({ routeName: 'Login' }) }
+            await getUser(data.password);
+            this.setState({ routeName: 'Home' })
         } else {
             this.setState({ routeName: 'Login' })
-        }*/
+        }
     }
     state = {
-        routeName: 'Home'
+        routeName: ''
     }
     render() {
         const MainStack = createStackNavigator(
@@ -34,7 +48,8 @@ class Routes extends React.Component {
                     navigationOptions: {
                         gestureEnabled: false,
                     },
-                }
+                },
+                Details
             },
             {
                 initialRouteName: this.state.routeName,
@@ -45,17 +60,19 @@ class Routes extends React.Component {
             }
         )
         const Route = createAppContainer(MainStack)
-        /*if (this.state.routeName === ''){
+        if (this.state.routeName === ''){
             return (
-                <View style={phonePortraitStyles.darkCenteredContainer}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.lightGray }}>
                     <ActivityIndicator size="large" color={colors.primary} />
                 </View>
             )
-        }*/
+        }
         return (
             <Route />
         )
     }
 }
 
-export default Routes;
+const mapStateToProps = (state: any) => ({})
+
+export default connect(mapStateToProps, { searchGithub, getUser, sortRepo })(Routes);

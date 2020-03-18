@@ -2,27 +2,36 @@ import React from 'react';
 import { 
     StyleSheet, 
     View, 
-    TextInput,
     TouchableOpacity,
     Text
 } from 'react-native';
 import { Icon } from "native-base";
 import { connect } from 'react-redux';
-import { colors } from '../Styles/Colors';
 import Menu from "react-native-material-menu";
+import { changeRowsRendered, move, runLogout, sortRepo, showModal } from "../Actions/mainAction";
+import { colors } from '../Styles/Colors';
 
 const FILTER_ARRAY = require('../config/sorting.json');
-const ROWS_RENDERED = [ "5", "10", "15", "20" ];
+const ROWS_RENDERED = [ 5, 10, 15, 20 ];
 
 interface Props {
-  openModal: (event: any) => void;
+  showModal: (event: any) => void;
+  changeRowsRendered: Function;
+  move: Function;
+  runLogout: Function;
+  sortRepo: Function;
+  scrollToTop: Function;
+  rowsRendered: Number;
+  reposLength: Number;
+  totalPageNumber: Number;
+  pageNumber: Number;
+  sorted: any;
+  navigation: any;
 }
 
-interface State {
+interface State {}
 
-}
-
-class Home extends React.Component<Props, State> {
+class Home extends React.PureComponent<Props, State> {
   menu: any;
   menu0: any;
   menu1: any;
@@ -31,20 +40,35 @@ class Home extends React.Component<Props, State> {
     this.menu = null;
   }
   setMenuRef = (ref: any) => this.menu = ref;
-  hideMenu = (format: String) => { this.menu.hide();};
+  hideMenu = (num: Number) => { 
+    this.props.changeRowsRendered(num);
+    this.menu.hide();
+  };
   showMenu = () => this.menu.show();
   setMenuRef0 = (ref: any) => this.menu0 = ref;
-  hideMenu0 = (format: any) => { this.menu0.hide(); };
+  hideMenu0 = async (format: any) => {
+    await this.props.runLogout();
+    this.menu0.hide();
+    this.props.navigation.goBack();
+  };
   showMenu0 = () => this.menu0.show();
   setMenuRef1 = (ref: any) => this.menu1 = ref;
-  hideMenu1 = (format: any) => { this.menu1.hide(); };
+  hideMenu1 = async (object: any) => { 
+    await this.props.sortRepo(object);
+    this.menu1.hide(); 
+  };
   showMenu1 = () => this.menu1.show();
+  runMove = (boolean: Boolean) => {
+    const { move, scrollToTop } = this.props;
+    move(boolean);
+    scrollToTop();
+  }
   render() {
-    const { openModal } = this.props;
+    const { showModal, rowsRendered, reposLength, totalPageNumber, pageNumber, sorted } = this.props;
     return (
       <View style={styles.headerContainer}>
         <View style={styles.headerTopView}>
-          <TouchableOpacity activeOpacity={.7} onPress={openModal} style={styles.inputStyle}>
+          <TouchableOpacity activeOpacity={.7} onPress={showModal} style={styles.inputStyle}>
             <Text style={styles.headerSearchText}>Search Repositories</Text>
             <Icon type="Feather" name="search" />
           </TouchableOpacity>
@@ -60,7 +84,7 @@ class Home extends React.Component<Props, State> {
             <Menu
             ref={this.setMenuRef}
             button={<TouchableOpacity style={styles.dropDownButton} onPress={this.showMenu}>
-                <Text style={styles.dropDownText}>{'5'}</Text>
+                <Text style={styles.dropDownText}>{rowsRendered}</Text>
                 <Icon type="Feather" name="chevron-down" style={styles.dropDownIcon} />
             </TouchableOpacity>}
             >
@@ -74,15 +98,15 @@ class Home extends React.Component<Props, State> {
             </Menu>
           </View>
           <View>
-            <Text style={styles.resultText}>70 results (14 pages)</Text>
+            <Text style={styles.resultText}>{reposLength} results ({totalPageNumber} pages)</Text>
             <View style={styles.paginationView}>
-              <TouchableOpacity activeOpacity={.7} style={styles.pagButton}>
+              <TouchableOpacity activeOpacity={.7} style={styles.pagButton} onPress={()=>this.runMove(false)}>
                 <Icon type="Feather" name="chevron-left" style={styles.pagIcon} />
               </TouchableOpacity>
               <View style={[styles.pagButton, { backgroundColor: colors.white }]}>
-                <Text style={styles.pagText}>1</Text>
+                <Text style={styles.pagText}>{pageNumber}</Text>
               </View>
-              <TouchableOpacity activeOpacity={.7} style={styles.pagButton}>
+              <TouchableOpacity activeOpacity={.7} style={styles.pagButton} onPress={()=>this.runMove(true)}>
                 <Icon type="Feather" name="chevron-right" style={styles.pagIcon} />
               </TouchableOpacity>
             </View>
@@ -96,8 +120,8 @@ class Home extends React.Component<Props, State> {
               <Text style={[styles.resultText]}>Filter List</Text>
               <Menu
               ref={this.setMenuRef1}
-              button={<TouchableOpacity style={[styles.dropDownButton, { height: 50, width: 220 }]} onPress={this.showMenu1}>
-                  <Text style={[styles.dropDownText, { fontSize: 14 }]}>{'ID (Ascending)'}</Text>
+              button={<TouchableOpacity style={[styles.dropDownButton, { height: 50, width: 250 }]} onPress={this.showMenu1}>
+                  <Text style={[styles.dropDownText, { fontSize: 14 }]}>{sorted !== {} ? sorted.display : ' '}</Text>
                   <Icon type="Feather" name="chevron-down" style={styles.dropDownIcon} />
               </TouchableOpacity>}
               >
@@ -117,10 +141,14 @@ class Home extends React.Component<Props, State> {
 };
 
 const mapStateToProps = (state: any) => ({
-
+  rowsRendered: state.main.rowsRendered,
+  reposLength: state.main.reposLength,
+  totalPageNumber: state.main.totalPageNumber,
+  pageNumber: state.main.pageNumber,
+  sorted: state.main.sorted
 })
 
-export default connect(mapStateToProps, {})(Home);
+export default connect(mapStateToProps, { changeRowsRendered, move, runLogout, sortRepo, showModal })(Home);
  
 const styles = StyleSheet.create({
   headerContainer: {

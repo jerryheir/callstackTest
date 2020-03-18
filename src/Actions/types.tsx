@@ -1,2 +1,10 @@
 export const RUN_LOGIN = 'RUN_LOGIN';
+export const GET_USER = 'GET_USER';
+export const LOADING_SEARCH = 'LOADING_SEARCH';
+export const SORT_REPO = 'SORT_REPO';
+export const SEARCH_GITHUB = 'SEARCH_GITHUB';
+export const CHANGE_ROWS = 'CHANGE_ROWS';
+export const MOVE_LIST = 'MOVE_LIST';
+export const TOGGLE_ORDER = 'TOGGLE_ORDER';
+export const SHOW_MODAL = 'SHOW_MODAL';
 export const RUN_LOGOUT = 'RUN_LOGOUT';

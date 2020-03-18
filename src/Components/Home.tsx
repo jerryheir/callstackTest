@@ -10,35 +10,46 @@ import HeaderAtom from '../Atoms/HeaderAtom';
 import { colors } from '../Styles/Colors';
 import ListItemAtom from '../Atoms/ListItemAtom';
 import ListEmptyAtom from '../Atoms/ListEmptyAtom';
+import Search from './Search';
 
 interface Props {
-  
+  repos: Array<any>;
+  viewRepos: Array<any>;
+  navigation: any;
 }
 
-interface State {
-
-}
+interface State {}
 
 class Home extends React.Component<Props, State> {
+  flatList: any;
   renderItem = ({ item, index }: any) => {
     return (
       <ListItemAtom 
+      index={index}
       item={item}
+      onPress={()=>this.props.navigation.navigate('Details', { item })}
       />
     )
   }
   render() {
+    const { navigation, viewRepos } = this.props;
     return (
       <SafeAreaView style={styles.mainContainer}>
-        <HeaderAtom openModal={()=>{}} />
+        <HeaderAtom 
+        scrollToTop={()=>this.flatList.scrollToOffset({x: 0, y: 0, animated: true})} 
+        navigation={navigation}
+        />
         <View style={styles.contentContainerStyle}>
           <FlatList 
-          data={["Hello", "Hey"]}
+          ref={(ref)=>this.flatList=ref}
+          onContentSizeChange={()=>this.flatList.scrollToOffset({x: 0, y: 0, animated: true})}
+          data={viewRepos}
           renderItem={this.renderItem}
-          contentContainerStyle={styles.contentContainerStyle}
+          contentContainerStyle={[styles.contentContainerStyle, { flex: 0 }]}
           ListEmptyComponent={<ListEmptyAtom />}
           keyExtractor={(item, index)=>index.toString()}
           />
+          <Search />
         </View>
       </SafeAreaView>
     );
@@ -46,7 +57,8 @@ class Home extends React.Component<Props, State> {
 };
 
 const mapStateToProps = (state: any) => ({
-
+  repos: state.main.repos,
+  viewRepos: state.main.viewRepos
 })
 
 export default connect(mapStateToProps, {})(Home);
@@ -58,6 +70,7 @@ const styles = StyleSheet.create({
   },
   contentContainerStyle: {
     flex: 1,
-    backgroundColor: colors.lightGray
+    backgroundColor: colors.lightGray,
+    paddingBottom: 5
   }
 });

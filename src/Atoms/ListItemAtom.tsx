@@ -3,45 +3,48 @@ import {
     StyleSheet, 
     View,
     Text,
-    Image,
     TouchableOpacity,
     Dimensions
 } from 'react-native';
 import { connect } from 'react-redux';
+import moment from "moment";
+import FastImage from 'react-native-fast-image';
 import { colors } from '../Styles/Colors';
 import { Icon } from 'native-base';
 
 interface Props {
-  item: any
+  index: Number;
+  item: any;
+  profile: any;
+  onPress: (e: any) => void;
 }
 
-interface State {
-
-}
+interface State {}
 
 class ListItemAtom extends React.Component<Props, State> {
   render() {
+    const { item: { id, owner, name, stargazers_count, created_at }, profile, onPress } = this.props;
     return (
-      <TouchableOpacity activeOpacity={.7} style={styles.itemContainer}>
+      <TouchableOpacity activeOpacity={.7} style={owner.login === profile.nickname ? styles.itemContainerOwner : styles.itemContainer} onPress={onPress}>
           <View style={styles.itemTopContainer}>
             <View style={styles.itemTopInnerView}>
-                <Image 
-                source={require('../Images/git-logo.png')}
+                <FastImage
+                source={owner.avatar_url ? { uri: owner.avatar_url, priority: FastImage.priority.high } : require('../Images/git-logo.png')}
                 style={styles.itemImage}
                 />
                 <View>
-                    <Text>Repo: <Text style={styles.itemRepoText}>react-native-fbads</Text></Text>
-                    <Text>Owner: <Text style={[styles.itemRepoText, { color: colors.black }]}>callstack-io</Text></Text>
+                    <Text>Repo: <Text style={styles.itemRepoText}>{name.length > 15 ? name.substring(0, 15) + '...' : name}</Text></Text>
+                    <Text>Owner: <Text style={[styles.itemRepoText, { color: colors.black }]}>{owner.login.length > 20 ? owner.login.substring(0, 20) + '...' : owner.login}</Text></Text>
                 </View>
             </View>
             <View style={styles.itemStarView}>
-                <Text style={styles.itemStarText}>88 </Text>
+                <Text style={styles.itemStarText}>{stargazers_count} </Text>
                 <Icon type="MaterialIcons" name="star" style={styles.itemStar} />
             </View>
           </View>
           <View style={styles.itemBottomContainer}>
-              <Text>{'ID-69101012'}</Text>
-              <Text style={styles.itemTimeText}>{'24 Sept 2019'}</Text>
+              <Text>{id}</Text>
+              <Text style={styles.itemTimeText}>{moment(new Date(created_at)).format('YYYY-MM-DD')}</Text>
           </View>
       </TouchableOpacity>
     );
@@ -49,7 +52,7 @@ class ListItemAtom extends React.Component<Props, State> {
 };
 
 const mapStateToProps = (state: any) => ({
-
+  profile: state.main.profile
 })
 
 export default connect(mapStateToProps, {})(ListItemAtom);
@@ -65,6 +68,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 11,
     marginTop: 11
+  },
+  itemContainerOwner: {
+    backgroundColor: colors.white,
+    alignSelf: 'center',
+    height: 110,
+    width: Dimensions.get('window').width - 32,
+    borderRadius: 4,
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    marginTop: 11,
+    borderColor: colors.gold,
+    borderWidth: 1,
+    shadowColor: 'rgba(0, 0, 0, 0.2)',
+    shadowOpacity: 1.5,
+    shadowOffset: { width: 0, height: 1.5 },
+    elevation: 3
   },
   itemTopContainer: {
     flexDirection: 'row',
