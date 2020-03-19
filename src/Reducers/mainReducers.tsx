@@ -61,14 +61,15 @@ export default function(state = initialState, action: Action) {
                 viewRepos: action.payload.slice(0, state.rowsRendered),
             }
         case SORT_REPO:
-            const { repos, sorted } = action.payload
+            const { repos, sorted } = action.payload;
+            const totalSort = parseInt((repos.length / state.rowsRendered).toFixed(0));
             return {
                 ...state,
                 sorted,
                 repos,
                 position: 0,
                 reposLength: repos.length,
-                totalPageNumber: parseInt((repos.length / state.rowsRendered).toFixed(0)),
+                totalPageNumber: totalSort > 0 ? totalSort : (totalSort === 0 && repos.length) ? 1 : 0,
                 pageNumber: repos.length ? 1 : 0,
                 viewRepos: repos.slice(0, state.rowsRendered),
             }
