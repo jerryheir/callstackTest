@@ -35,7 +35,7 @@ This is done (Check Home.tsx -> ListItemAtom.tsx). Rows can also be clicked to b
 This is done (Check Search.tsx)
 
 - ### Cache the results of every search (or have a limit) - do not make an API request if the results are already stored
-This is done on every successful search request, the data is cached and when the SEARCH API is called and the cached data is displayed. This improved overall performance, and helped with faster loading. Since caching enhanced the loading processes, I took it a step further and also cached the image, because I wanted to reduce image loading. 
+This is done on every successful search request, the data is cached and when the SEARCH API is called, the cached data is displayed. This improved overall performance, and helped with faster loading. Since caching enhanced the loading processes, I took it a step further and also cached the image, because I wanted to reduce image loading. 
 
 <image src="./src/Images/sorted.png" height="400" />
 
@@ -81,5 +81,5 @@ I tried as much as possible to use best practices like DRY - Don't Repeat Yourse
 I also used a lot of Guarding (Typescript also helped) to ensure the unexpected are handled properly.
 I used a lot of ES6/ES7 features like const, map, filter, string templates, spread parameters, arrow functions, async and await, destructuring, I used Hooks like useRef, useSelector etc. I used redux also.
 I use git for version control, though I only used the master branch.
-I thank you for these opportunity. This job would mean a lot to me.
+I thank you for this opportunity. This job would mean a lot to me.
 
