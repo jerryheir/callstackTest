@@ -178,11 +178,12 @@ export const toggleOrder = () => async (dispatch: any, getState: Function) => {
     })
 }
 
-export const showModal = () => async (dispatch: any, getState: Function) => {
+export const showModal = (text?: String) => async (dispatch: any, getState: Function) => {
+    const searchText = text ? text : '';
     const { open } = getState().main;
     dispatch({
         type: SHOW_MODAL,
-        payload: !open
+        payload: { open: !open, searchText }
     })
 }
 

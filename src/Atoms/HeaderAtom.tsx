@@ -11,7 +11,7 @@ const FILTER_ARRAY = require('../config/sorting.json');
 const ROWS_RENDERED = [ 5, 10, 15, 20 ];
 
 interface Props {
-  showModal: (event: any) => void;
+  showModal: () => void;
   changeRowsRendered: Function;
   move: Function;
   runLogout: Function;
@@ -23,6 +23,7 @@ interface Props {
   pageNumber: Number;
   sorted: any;
   navigation: any;
+  searchText: String;
 }
 
 class HeaderAtom extends React.PureComponent<Props> {
@@ -31,12 +32,14 @@ class HeaderAtom extends React.PureComponent<Props> {
   changeRows = async (num: any)=>await this.props.changeRowsRendered(num);
   sort = async (object: any)=>{await this.props.sortRepo(object),this.props.scrollToTop()}
   render() {
-    const { showModal, rowsRendered, reposLength, totalPageNumber, pageNumber, sorted } = this.props;
+    const { showModal, rowsRendered, reposLength, totalPageNumber, pageNumber, sorted, searchText } = this.props;
     return (
       <View style={styles.headerContainer}>
         <View style={styles.headerTopView}>
-          <TouchableOpacity activeOpacity={.7} onPress={showModal} style={styles.inputStyle}>
-            <Text style={styles.headerSearchText}>Search Repositories</Text>
+          <TouchableOpacity activeOpacity={.7} onPress={()=>showModal()} style={styles.inputStyle}>
+            <Text style={[styles.headerSearchText, {
+              color: searchText !== '' ? colors.black : colors.gray
+            }]}>{searchText !== '' ? searchText : 'Search Repositories'}</Text>
             <Icon type="Feather" name="search" />
           </TouchableOpacity>
           <PickerAtom list={["Log out"]} onPress={this.logout}>
@@ -106,7 +109,8 @@ const mapStateToProps = (state: any) => ({
   reposLength: state.main.reposLength,
   totalPageNumber: state.main.totalPageNumber,
   pageNumber: state.main.pageNumber,
-  sorted: state.main.sorted
+  sorted: state.main.sorted,
+  searchText: state.main.searchText
 })
 
 export default connect(mapStateToProps, { changeRowsRendered, move, runLogout, sortRepo, showModal })(HeaderAtom);

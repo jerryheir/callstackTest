@@ -19,7 +19,7 @@ import { colors } from '../Styles/Colors';
 
 interface Props {
     open: boolean | undefined;
-    showModal: () => void;
+    showModal: (e?: String) => void;
     order: String;
     toggleOrder: (foo: boolean) => void;
     searchGithub: Function;
@@ -68,7 +68,7 @@ class Search extends React.Component<Props, State> {
         if (!search || search.includes('*******')) return this.setState({ search: '', loading: false });
         await searchGithub(search, order);
         this.setState({ search: '', loading: false })
-        showModal();
+        showModal(search);
         await sortRepo(sorted);
     }
     updateText = (search: string) => {
@@ -88,7 +88,7 @@ class Search extends React.Component<Props, State> {
         animationType="slide"
         transparent={false}
         visible={open}
-        onRequestClose={showModal}
+        onRequestClose={()=>showModal()}
         >
             <View style={styles.searchContainer}>
                 <View style={styles.searchInputStyle}>
@@ -96,7 +96,7 @@ class Search extends React.Component<Props, State> {
                     type="MaterialIcons" 
                     name="chevron-left" 
                     style={styles.searchBackIcon} 
-                    onPress={!loading ? showModal : undefined} 
+                    onPress={()=>!loading ? showModal() : {}} 
                     />
                     <TextInput
                     value={search}
@@ -138,7 +138,7 @@ class Search extends React.Component<Props, State> {
                                 onPress={async ()=>{
                                     await searchGithub(searchWords[0], searchWords[1]);
                                     this.setState({ search: '', loading: false })
-                                    showModal();
+                                    showModal(searchWords[0]);
                                 }}
                                 >
                                     <View>

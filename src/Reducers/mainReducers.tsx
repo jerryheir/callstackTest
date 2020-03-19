@@ -14,6 +14,7 @@ import {
 const initialState = {
     accessToken: '',
     profile: {},
+    searchText: '',
     open: false,
     order: 'asc',
     sorted: {},
@@ -95,7 +96,7 @@ export default function(state = initialState, action: Action) {
         case SHOW_MODAL:
             return {
                 ...state,
-                open: action.payload
+                ...action.payload
             }
         case RUN_LOGOUT:
             return {
