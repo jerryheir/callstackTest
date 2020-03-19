@@ -1,13 +1,8 @@
 import React from 'react';
-import { 
-    StyleSheet, 
-    SafeAreaView, 
-    View,
-    FlatList
-} from 'react-native';
+import { SafeAreaView, View, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import HeaderAtom from '../Atoms/HeaderAtom';
-import { colors } from '../Styles/Colors';
+import { styles } from "../Styles";
 import ListItemAtom from '../Atoms/ListItemAtom';
 import ListEmptyAtom from '../Atoms/ListEmptyAtom';
 import Search from './Search';
@@ -18,9 +13,7 @@ interface Props {
   navigation: any;
 }
 
-interface State {}
-
-class Home extends React.Component<Props, State> {
+class Home extends React.PureComponent<Props> {
   flatList: any;
   renderItem = ({ item, index }: any) => {
     return (
@@ -31,18 +24,19 @@ class Home extends React.Component<Props, State> {
       />
     )
   }
+  scrollToTop = () => this.flatList.scrollToOffset({x: 0, y: 0, animated: true});
   render() {
     const { navigation, viewRepos } = this.props;
     return (
       <SafeAreaView style={styles.mainContainer}>
         <HeaderAtom 
-        scrollToTop={()=>this.flatList.scrollToOffset({x: 0, y: 0, animated: true})} 
+        scrollToTop={this.scrollToTop} 
         navigation={navigation}
         />
         <View style={styles.contentContainerStyle}>
           <FlatList 
           ref={(ref)=>this.flatList=ref}
-          onContentSizeChange={()=>this.flatList.scrollToOffset({x: 0, y: 0, animated: true})}
+          onContentSizeChange={this.scrollToTop}
           data={viewRepos}
           renderItem={this.renderItem}
           contentContainerStyle={[styles.contentContainerStyle, { flex: 0 }]}
@@ -62,15 +56,3 @@ const mapStateToProps = (state: any) => ({
 })
 
 export default connect(mapStateToProps, {})(Home);
- 
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    backgroundColor: colors.white
-  },
-  contentContainerStyle: {
-    flex: 1,
-    backgroundColor: colors.lightGray,
-    paddingBottom: 5
-  }
-});

@@ -4,11 +4,12 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createAppContainer } from "react-navigation";
 import { connect } from 'react-redux';
 import * as Keychain from 'react-native-keychain';
-import { searchGithub, getUser, sortRepo } from "../Actions/mainAction";
+import { searchGithub, getUser } from "../Actions/mainAction";
 import Login from '../Components/Login'
 import Home from '../Components/Home';
 import Details from '../Components/Details';
 import { colors } from '../Styles/Colors';
+import { styles } from '../Styles';
 
 interface Props {
   searchGithub: Function;
@@ -25,11 +26,10 @@ class Routes extends React.Component<Props, State> {
         await searchGithub('a');
         const data = await Keychain.getGenericPassword();
         if (data){
-            await getUser(data.password);
-            this.setState({ routeName: 'Home' })
-        } else {
-            this.setState({ routeName: 'Login' })
+            const result = await getUser(data.password);
+            return this.setState({ routeName: (!result) ? 'Login' : 'Home' })
         }
+        return this.setState({ routeName: 'Login' });
     }
     state = {
         routeName: ''
@@ -62,7 +62,7 @@ class Routes extends React.Component<Props, State> {
         const Route = createAppContainer(MainStack)
         if (this.state.routeName === ''){
             return (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.lightGray }}>
+                <View style={styles.routesContainer}>
                     <ActivityIndicator size="large" color={colors.primary} />
                 </View>
             )
@@ -75,4 +75,4 @@ class Routes extends React.Component<Props, State> {
 
 const mapStateToProps = (state: any) => ({})
 
-export default connect(mapStateToProps, { searchGithub, getUser, sortRepo })(Routes);
+export default connect(mapStateToProps, { searchGithub, getUser })(Routes);

@@ -1,6 +1,5 @@
 import React from 'react';
 import { 
-    StyleSheet, 
     ScrollView,
     TouchableOpacity,
     ActivityIndicator,
@@ -11,10 +10,12 @@ import {
     Text
 } from 'react-native';
 import { connect } from 'react-redux';
-import { toggleOrder, showModal, searchGithub, sortRepo } from "../Actions/mainAction";
-import { colors } from '../Styles/Colors';
+import * as _ from "underscore";
 import { Icon } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
+import { toggleOrder, showModal, searchGithub, sortRepo } from "../Actions/mainAction";
+import { styles } from "../Styles";
+import { colors } from '../Styles/Colors';
 
 interface Props {
     open: boolean | undefined;
@@ -30,9 +31,21 @@ interface State {
     search: string | undefined;
     cache: Array<any>;
     loading: Boolean;
+    result: Array<any>;
 }
 
 class Search extends React.Component<Props, State> {
+    handleInputThrottled: ((search: string) => void) & _.Cancelable;
+    constructor(props: Props) {
+        super(props);
+        this.handleInputThrottled = _.throttle(this.updateText, 50);
+        this.state = {
+            search: '',
+            cache: [],
+            loading: false,
+            result: []
+        }
+    }
     async componentDidMount(){
         const storedKeys = await AsyncStorage.getAllKeys();
         const keys = storedKeys.filter(val=> val.includes('*******'));
@@ -48,31 +61,28 @@ class Search extends React.Component<Props, State> {
         })
         this.setState({ cache })
     }
-    state: State = {
-        search: '',
-        cache: [],
-        loading: false
-    }
     handleSubmit = async () => {
         this.setState({ loading: true })
         const { search } = this.state;
         const { searchGithub, order, showModal, sorted, sortRepo } = this.props;
-        if (!search) return;
+        if (!search || search.includes('*******')) return this.setState({ search: '', loading: false });
         await searchGithub(search, order);
         this.setState({ search: '', loading: false })
         showModal();
         await sortRepo(sorted);
     }
     updateText = (search: string) => {
-        this.setState({ search })
+        const { cache } = this.state;
+        let result = (cache) && cache.filter(value =>{
+            if (search){
+                return value.search.trim().toLowerCase().slice(0, search.trim().toLowerCase().length) === search.trim().toLowerCase()
+            }
+        });
+        this.setState({ search, result })
     }
   render() {
-    const { search, cache, loading } = this.state;
+    const { search, cache, loading, result } = this.state;
     const { order, open, showModal, toggleOrder, searchGithub } = this.props;
-    const word = search ? search : '';
-    let result = (cache) && cache.filter(value =>{
-        return value.search.trim().toLowerCase().slice(0, word.trim().toLowerCase().length) === word.trim().toLowerCase()
-    });
     return (
         <Modal
         animationType="slide"
@@ -81,7 +91,7 @@ class Search extends React.Component<Props, State> {
         onRequestClose={showModal}
         >
             <View style={styles.searchContainer}>
-                <View style={styles.inputStyle}>
+                <View style={styles.searchInputStyle}>
                     <Icon 
                     type="MaterialIcons" 
                     name="chevron-left" 
@@ -95,7 +105,7 @@ class Search extends React.Component<Props, State> {
                     placeholder='Search Repositories'
                     maxLength={30}
                     placeholderTextColor={colors.gray}
-                    onChangeText={this.updateText}
+                    onChangeText={this.handleInputThrottled}
                     />
                 </View>
                 <View style={[styles.searchItem, { marginHorizontal: 0 }]}>
@@ -113,13 +123,13 @@ class Search extends React.Component<Props, State> {
                         <Text style={styles.searchButtonText}>SEARCH</Text>
                         <Icon type="Feather" name="search" style={styles.searchButtonIcon} />
                     </TouchableOpacity>}
-                    {(loading) && <View style={[styles.searchButtonStyle, { justifyContent: 'center', paddingHorizontal: 32 }]}>
+                    {(loading) && <View style={[styles.searchButtonStyle, { justifyContent: 'center', paddingHorizontal: 32, paddingVertical: 0 }]}>
                         <ActivityIndicator size="large" color={colors.white} />
                     </View>}
                 </View>
                 <ScrollView>
                     {
-                        (cache.length > 0 && word.length > 0) && result.map((val: any, key: number)=>{
+                        (cache.length > 0 && result.length > 0) && result.map((val: any, key: number)=>{
                             const searchWords = val.search.split('*******')
                             return (
                                 <TouchableOpacity
@@ -154,71 +164,3 @@ const mapStateToProps = (state: any) => ({
 })
 
 export default connect(mapStateToProps, { showModal, toggleOrder, searchGithub, sortRepo })(Search);
- 
-const styles = StyleSheet.create({
-  searchContainer: {
-    flex: 1,
-    backgroundColor: colors.white,
-    paddingTop: 62,
-  },
-  searchBackIcon: {
-      fontSize: 42
-  },
-  smallTextInput: {
-    fontSize: 21,
-    width: '100%'
-  },
-  inputStyle: {
-    height: 50, 
-    borderRadius: 25,
-    flexDirection: 'row',
-    paddingHorizontal: 16, 
-    marginHorizontal: 16,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.lightGray
-  },
-  searchItem: {
-    flexDirection: 'row',
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    borderBottomColor: colors.gray,
-    borderBottomWidth: .5,
-    marginHorizontal: 16
-  },
-  searchText: {
-    fontSize: 16,
-    fontWeight: '600'
-  },
-  searchButtonStyle: {
-    height: 50,
-    borderRadius: 5,
-    backgroundColor: colors.primary,
-    flexDirection: 'row',
-    paddingHorizontal: 21,
-    paddingVertical: 11,
-    alignItems: 'center'
-  },
-  searchButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: colors.white,
-    paddingRight: 16
-  },
-  searchButtonIcon: {
-      color: colors.white,
-      fontSize: 21,
-      height: 21,
-      width: 21
-  },
-  switchView: {
-      flexDirection: 'row',
-      alignItems: 'center',
-  },
-  switchText: {
-      paddingLeft: 16,
-      fontSize: 16
-  }
-});

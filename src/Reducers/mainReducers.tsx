@@ -50,7 +50,6 @@ export default function(state = initialState, action: Action) {
                 loading: action.payload
             }
         case SEARCH_GITHUB:
-            console.log(SEARCH_GITHUB);
             return {
                 ...state,
                 repos: action.payload,
@@ -61,32 +60,32 @@ export default function(state = initialState, action: Action) {
                 viewRepos: action.payload.slice(0, state.rowsRendered),
             }
         case SORT_REPO:
+            const { repos, sorted } = action.payload
             return {
                 ...state,
-                sorted: action.payload.sorted,
-                repos: action.payload.repos,
+                sorted,
+                repos,
                 position: 0,
-                reposLength: action.payload.repos.length,
-                totalPageNumber: parseInt((action.payload.repos.length / state.rowsRendered).toFixed(0)),
-                pageNumber: action.payload.repos.length ? 1 : 0,
-                viewRepos: action.payload.repos.slice(0, state.rowsRendered),
+                reposLength: repos.length,
+                totalPageNumber: parseInt((repos.length / state.rowsRendered).toFixed(0)),
+                pageNumber: repos.length ? 1 : 0,
+                viewRepos: repos.slice(0, state.rowsRendered),
             }
         case CHANGE_ROWS:
+            const total = parseInt((state.repos.length / action.payload).toFixed(0));
             return {
                 ...state,
                 reposLength: state.repos.length,
                 position: 0,
                 rowsRendered: action.payload,
-                totalPageNumber: parseInt((state.repos.length / action.payload).toFixed(0)),
-                pageNumber: state.repos.length ? 1 : 0,
+                totalPageNumber: total > 0 ? total : (total === 0 && state.repos.length) ? 1 : 0,
+                pageNumber: state.repos.length > 0 ? 1 : 0,
                 viewRepos: state.repos.slice(0, action.payload),
             }
         case MOVE_LIST:
             return {
                 ...state,
-                viewRepos: action.payload.viewRepos,
-                position: action.payload.position,
-                pageNumber: action.payload.pageNumber
+                ...action.payload
             }
         case TOGGLE_ORDER:
             return {

@@ -27,7 +27,6 @@ export const runLogin = () => async (dispatch: any) => {
         console.log(error)
         return false;
     })
-    console.log(response)
     if (response && response.accessToken){ // Guarding
         dispatch(getUser(response.accessToken));
         await Keychain.setGenericPassword('', response.accessToken);
@@ -49,11 +48,19 @@ export const getUser = (accessToken: String) => async (dispatch: any) => {
         }
     })
     .then(res=>res.json())
-    dispatch(sortRepo(FILTER_ARRAY[2]));
-    dispatch({
-        type: GET_USER,
-        payload: userResult
+    .catch((err)=>{
+        console.log(err);
+        return false;
     })
+    if (userResult){
+        dispatch(sortRepo(FILTER_ARRAY[2]));
+        dispatch({
+            type: GET_USER,
+            payload: userResult
+        })
+        return true;
+    }
+    return userResult;
 }
 
 export const loadingSearch = () => async (dispatch: any, getState: Function) => {
@@ -104,34 +111,39 @@ export const sortRepo = (object: any) => async (dispatch: any, getState: Functio
 }
 
 export const searchGithub = (query: String, o?: String) => async (dispatch: any) => {
-    dispatch(loadingSearch());
-    const order = o ? o : 'asc';
-    const cachedArray = await AsyncStorage.getItem(`${query}*******${order}`);
-    if (cachedArray) {
-        const array = JSON.parse(cachedArray);
-        dispatch({
-            type: SEARCH_GITHUB,
-            payload: array
+    try {
+        dispatch(loadingSearch());
+        const order = o ? o : 'asc';
+        const cachedArray = await AsyncStorage.getItem(`${query}*******${order}`);
+        if (cachedArray) {
+            const array = JSON.parse(cachedArray);
+            dispatch({
+                type: SEARCH_GITHUB,
+                payload: array
+            })
+            dispatch(loadingSearch());
+            return true;
+        }
+        const response = await fetch(`${BASE_URL}q=${query}&order=${order}&page=1&per_page=100`, {
+            method: 'GET',
         })
-        return dispatch(loadingSearch());
-    }
-    const response = await fetch(`${BASE_URL}q=${query}&order=${order}&page=1&per_page=100`, {
-        method: 'GET',
-    })
-    .then(res=>res.json())
-    .catch(error=>{
-        console.log(error)
+        .then(res=>res.json())
+        .catch(error=>{
+            console.log(error)
+            return false;
+        })
+        if (response && response.items.length >= 0){
+            await AsyncStorage.setItem(`${query}*******${order}`, JSON.stringify(response.items));
+            dispatch({
+                type: SEARCH_GITHUB,
+                payload: response.items
+            })
+        }
+        dispatch(loadingSearch());
+        return true;
+    } catch(err){
         return false;
-    })
-    // console.log(response);
-    if (response && response.items.length >= 0){
-        await AsyncStorage.setItem(`${query}*******${order}`, JSON.stringify(response.items));
-        dispatch({
-            type: SEARCH_GITHUB,
-            payload: response.items
-        })
     }
-    return dispatch(loadingSearch());
 }
 
 export const changeRowsRendered = (number: Number) => async (dispatch: any) => {

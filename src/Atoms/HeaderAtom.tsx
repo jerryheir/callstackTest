@@ -1,15 +1,11 @@
 import React from 'react';
-import { 
-    StyleSheet, 
-    View, 
-    TouchableOpacity,
-    Text
-} from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 import { Icon } from "native-base";
 import { connect } from 'react-redux';
-import Menu from "react-native-material-menu";
 import { changeRowsRendered, move, runLogout, sortRepo, showModal } from "../Actions/mainAction";
 import { colors } from '../Styles/Colors';
+import { styles } from "../Styles";
+import PickerAtom from './PickerAtom';
 
 const FILTER_ARRAY = require('../config/sorting.json');
 const ROWS_RENDERED = [ 5, 10, 15, 20 ];
@@ -29,40 +25,11 @@ interface Props {
   navigation: any;
 }
 
-interface State {}
-
-class Home extends React.PureComponent<Props, State> {
-  menu: any;
-  menu0: any;
-  menu1: any;
-  constructor(props: Props){
-    super(props);
-    this.menu = null;
-  }
-  setMenuRef = (ref: any) => this.menu = ref;
-  hideMenu = (num: Number) => { 
-    this.props.changeRowsRendered(num);
-    this.menu.hide();
-  };
-  showMenu = () => this.menu.show();
-  setMenuRef0 = (ref: any) => this.menu0 = ref;
-  hideMenu0 = async (format: any) => {
-    await this.props.runLogout();
-    this.menu0.hide();
-    this.props.navigation.goBack();
-  };
-  showMenu0 = () => this.menu0.show();
-  setMenuRef1 = (ref: any) => this.menu1 = ref;
-  hideMenu1 = async (object: any) => { 
-    await this.props.sortRepo(object);
-    this.menu1.hide(); 
-  };
-  showMenu1 = () => this.menu1.show();
-  runMove = (boolean: Boolean) => {
-    const { move, scrollToTop } = this.props;
-    move(boolean);
-    scrollToTop();
-  }
+class HeaderAtom extends React.PureComponent<Props> {
+  logout = async (format: any) => {await this.props.runLogout(),this.props.navigation.navigate('Login')};
+  runMove = (boolean: Boolean) => {this.props.move(boolean),this.props.scrollToTop()}
+  changeRows = async (num: any)=>await this.props.changeRowsRendered(num);
+  sort = async (object: any)=>{await this.props.sortRepo(object),this.props.scrollToTop()}
   render() {
     const { showModal, rowsRendered, reposLength, totalPageNumber, pageNumber, sorted } = this.props;
     return (
@@ -72,42 +39,45 @@ class Home extends React.PureComponent<Props, State> {
             <Text style={styles.headerSearchText}>Search Repositories</Text>
             <Icon type="Feather" name="search" />
           </TouchableOpacity>
-          <Menu ref={this.setMenuRef0} button={<Icon type="Feather" name="menu" onPress={this.showMenu0} />}>
-            <TouchableOpacity style={[styles.dropDownItemView, { width: 180 }]} onPress={this.hideMenu0}>
-              <Text style={styles.dropDownText}>{'Log Out'}</Text>
-            </TouchableOpacity>
-          </Menu>
+          <PickerAtom list={["Log out"]} onPress={this.logout}>
+            <Icon type="Feather" name="menu" />
+          </PickerAtom>
         </View>
         <View style={styles.headerTopView}>
           <View>
             <Text style={[styles.resultText, { textAlign: 'left' }]}>Rows per page</Text>
-            <Menu
-            ref={this.setMenuRef}
-            button={<TouchableOpacity style={styles.dropDownButton} onPress={this.showMenu}>
-                <Text style={styles.dropDownText}>{rowsRendered}</Text>
-                <Icon type="Feather" name="chevron-down" style={styles.dropDownIcon} />
-            </TouchableOpacity>}
-            >
-                {
-                  ROWS_RENDERED.map((value, key)=>(
-                    <TouchableOpacity key={key} style={styles.dropDownItemView} onPress={()=>this.hideMenu(value)}>
-                      <Text style={styles.dropDownText}>{value}</Text>
-                    </TouchableOpacity>
-                  ))
-                }
-            </Menu>
+            <PickerAtom list={ROWS_RENDERED} onPress={this.changeRows}>
+              <View style={styles.dropDownButton}>
+                  <Text style={styles.dropDownText}>{rowsRendered}</Text>
+                  <Icon type="Feather" name="chevron-down" style={styles.dropDownIcon} />
+              </View>
+            </PickerAtom>
           </View>
           <View>
             <Text style={styles.resultText}>{reposLength} results ({totalPageNumber} pages)</Text>
             <View style={styles.paginationView}>
-              <TouchableOpacity activeOpacity={.7} style={styles.pagButton} onPress={()=>this.runMove(false)}>
-                <Icon type="Feather" name="chevron-left" style={styles.pagIcon} />
+              <TouchableOpacity 
+              activeOpacity={.7} 
+              style={[styles.pagButton, { backgroundColor: (pageNumber <= 1) ? colors.white : colors.primary }]} 
+              disabled={(pageNumber <= 1) ? true : false}
+              onPress={()=>this.runMove(false)}>
+                <Icon 
+                type="Feather" 
+                name="chevron-left" 
+                style={[styles.pagIcon, { color: (pageNumber <= 1) ? colors.black : colors.white }]} />
               </TouchableOpacity>
               <View style={[styles.pagButton, { backgroundColor: colors.white }]}>
                 <Text style={styles.pagText}>{pageNumber}</Text>
               </View>
-              <TouchableOpacity activeOpacity={.7} style={styles.pagButton} onPress={()=>this.runMove(true)}>
-                <Icon type="Feather" name="chevron-right" style={styles.pagIcon} />
+              <TouchableOpacity 
+              activeOpacity={.7} 
+              style={[styles.pagButton, { backgroundColor: (totalPageNumber === pageNumber) ? colors.white : colors.primary }]} 
+              disabled={(totalPageNumber === pageNumber) ? true : false}
+              onPress={()=>this.runMove(true)}>
+                <Icon 
+                type="Feather" 
+                name="chevron-right" 
+                style={[styles.pagIcon, { color: (totalPageNumber === pageNumber) ? colors.black : colors.white }]} />
               </TouchableOpacity>
             </View>
           </View>
@@ -118,21 +88,12 @@ class Home extends React.PureComponent<Props, State> {
           </View>
           <View>
               <Text style={[styles.resultText]}>Filter List</Text>
-              <Menu
-              ref={this.setMenuRef1}
-              button={<TouchableOpacity style={[styles.dropDownButton, { height: 50, width: 250 }]} onPress={this.showMenu1}>
-                  <Text style={[styles.dropDownText, { fontSize: 14 }]}>{sorted !== {} ? sorted.display : ' '}</Text>
-                  <Icon type="Feather" name="chevron-down" style={styles.dropDownIcon} />
-              </TouchableOpacity>}
-              >
-                  {
-                    FILTER_ARRAY.map((value: any, key: string | number | undefined)=>(
-                      <TouchableOpacity key={key} style={[styles.dropDownItemView, { height: 44, minWidth: 250, maxWidth: 300 }]} onPress={()=>this.hideMenu1(value)}>
-                        <Text style={[styles.dropDownText, { fontSize: 14 }]}>{value.display}</Text>
-                      </TouchableOpacity>
-                    ))
-                  }
-              </Menu>
+              <PickerAtom list={FILTER_ARRAY} onPress={this.sort}>
+                <View style={[styles.dropDownButton, { height: 50, width: 250 }]}>
+                    <Text style={[styles.dropDownText, { fontSize: 14 }]}>{sorted !== {} ? sorted.display : ' '}</Text>
+                    <Icon type="Feather" name="chevron-down" style={styles.dropDownIcon} />
+                </View>
+              </PickerAtom>
             </View>
         </View>
       </View>
@@ -148,91 +109,4 @@ const mapStateToProps = (state: any) => ({
   sorted: state.main.sorted
 })
 
-export default connect(mapStateToProps, { changeRowsRendered, move, runLogout, sortRepo, showModal })(Home);
- 
-const styles = StyleSheet.create({
-  headerContainer: {
-    padding: 16,
-    backgroundColor: colors.white
-  },
-  headerTopView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 11
-  },
-  inputStyle: {
-    height: 50, 
-    width: '85%',
-    borderRadius: 25,
-    flexDirection: 'row',
-    paddingHorizontal: 16, 
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.lightGray
-  },
-  headerSearchText: {
-    color: colors.gray,
-    fontSize: 21
-  },
-  paginationView: { 
-    flexDirection: 'row' 
-  },
-  pagIcon: { 
-    height: 30, 
-    width: 30,
-    marginRight: 3,
-    color: colors.white
-  },
-  pagText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.black
-  },
-  pagButton: {
-    height: 56,
-    width: 56,
-    borderRadius: 28,
-    borderColor: colors.primary,
-    borderWidth: .5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    marginLeft: 11
-  },
-  resultText: {
-    textAlign: 'right',
-    color: colors.black,
-    paddingBottom: 11
-  },
-  dropDownButton: {
-      height: 56,
-      width: 100,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingHorizontal: 16,
-      borderRadius: 8,
-      backgroundColor: colors.white,
-      borderColor: colors.primary,
-      borderWidth: .5
-  },
-  dropDownText: { 
-      fontSize: 18, 
-      color: colors.primary 
-  },
-  dropDownIcon: { 
-      fontSize: 32, 
-      color: colors.primary 
-  },
-  dropDownItemView: {
-      flex: 1,
-      height: 48,
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingLeft: 21,
-      minWidth: 100,
-      maxWidth: 200,
-      backgroundColor: colors.lightGray
-  },
-});
+export default connect(mapStateToProps, { changeRowsRendered, move, runLogout, sortRepo, showModal })(HeaderAtom);

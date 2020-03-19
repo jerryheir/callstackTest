@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Image, Text, ActivityIndicator, StyleSheet } from 'react-native'; 
+import { View, Image, Text, ActivityIndicator } from 'react-native'; 
+import { styles } from "../Styles";
 import { useSelector } from "react-redux";
 import { colors } from '../Styles/Colors';
 
@@ -29,34 +30,3 @@ const ListEmptyAtom = () => {
 }
 
 export default ListEmptyAtom;
-
-const styles = StyleSheet.create({
-    container404: {
-        flex: 1,
-        height: '60%',
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    image404Style: {
-        width: 180,
-        opacity: .7,
-        alignSelf: 'center',
-        marginTop: 50,
-        marginBottom: 21
-    },
-    loadingView: {
-        marginTop: 120,
-        backgroundColor: colors.primary,
-        height: 80,
-        width: 80, 
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    text404: {
-        fontSize: 70,
-        fontWeight: 'bold',
-        textAlign: 'center',
-        color: colors.white
-    }
-})
