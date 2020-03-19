@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { styles } from "../Styles";
-import { useSelector } from 'react-redux';
 import moment from "moment";
 import FastImage from 'react-native-fast-image';
 import { colors } from '../Styles/Colors';
@@ -11,11 +10,11 @@ interface Props {
   index: Number;
   item: any;
   onPress: (e: any) => void;
+  profile: any;
 }
 
 const ListItemAtom = (props: Props) => {
-  const { profile } = useSelector((state: any)=>state.main);
-  const { item: { id, owner, name, stargazers_count, created_at }, onPress } = props;
+  const { item: { id, owner, name, stargazers_count, created_at }, onPress, profile } = props;
   return (
     <TouchableOpacity activeOpacity={.7} style={owner.login === profile.nickname ? styles.itemContainerOwner : styles.itemContainer} onPress={onPress}>
         <View style={styles.itemTopContainer}>

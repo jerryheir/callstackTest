@@ -82,7 +82,7 @@ class Search extends React.Component<Props, State> {
     }
   render() {
     const { search, cache, loading, result } = this.state;
-    const { order, open, showModal, toggleOrder, searchGithub } = this.props;
+    const { order, open, showModal, toggleOrder, searchGithub, sortRepo, sorted } = this.props;
     return (
         <Modal
         animationType="slide"
@@ -139,6 +139,7 @@ class Search extends React.Component<Props, State> {
                                     await searchGithub(searchWords[0], searchWords[1]);
                                     this.setState({ search: '', loading: false })
                                     showModal(searchWords[0]);
+                                    await sortRepo(sorted);
                                 }}
                                 >
                                     <View>

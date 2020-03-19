@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, Image, Text, ActivityIndicator } from 'react-native'; 
 import { styles } from "../Styles";
-import { useSelector } from "react-redux";
 import { colors } from '../Styles/Colors';
 
-const ListEmptyAtom = () => {
-    const { loading } = useSelector((state: any)=>state.main);
+const ListEmptyAtom = (props: any) => {
+    const { loading } = props;
     return (
         <View style={styles.container404}>
             {

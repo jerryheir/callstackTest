@@ -11,6 +11,8 @@ interface Props {
   repos: Array<any>;
   viewRepos: Array<any>;
   navigation: any;
+  loading: Boolean;
+  profile: any;
 }
 
 class Home extends React.PureComponent<Props> {
@@ -18,15 +20,16 @@ class Home extends React.PureComponent<Props> {
   renderItem = ({ item, index }: any) => {
     return (
       <ListItemAtom 
-      index={index}
-      item={item}
-      onPress={()=>this.props.navigation.navigate('Details', { item })}
-      />
+        index={index}
+        profile={this.props.profile}
+        item={item}
+        onPress={()=>this.props.navigation.navigate('Details', { item })}
+        />
     )
   }
   scrollToTop = () => this.flatList.scrollToOffset({x: 0, y: 0, animated: true});
   render() {
-    const { navigation, viewRepos } = this.props;
+    const { navigation, viewRepos, loading } = this.props;
     return (
       <SafeAreaView style={styles.mainContainer}>
         <HeaderAtom 
@@ -40,7 +43,7 @@ class Home extends React.PureComponent<Props> {
           data={viewRepos}
           renderItem={this.renderItem}
           contentContainerStyle={[styles.contentContainerStyle, { flex: 0 }]}
-          ListEmptyComponent={<ListEmptyAtom />}
+          ListEmptyComponent={<ListEmptyAtom loading={loading} />}
           keyExtractor={(item, index)=>index.toString()}
           />
           <Search />
@@ -52,7 +55,9 @@ class Home extends React.PureComponent<Props> {
 
 const mapStateToProps = (state: any) => ({
   repos: state.main.repos,
-  viewRepos: state.main.viewRepos
+  viewRepos: state.main.viewRepos,
+  loading: state.main.loading,
+  profile: state.main.profile
 })
 
 export default connect(mapStateToProps, {})(Home);
