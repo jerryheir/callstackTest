@@ -77,7 +77,9 @@ I created 4 Tests, 2 Test suites :(
 Currently doing that :) I hope it is not so long.
 
 # FINAL NOTES (THOUGHTS AND CONSIDERATIONS)
-I tried as much as possible to use best practices like DRY - Don't Repeat Yourself, a major example is the PickerAtom that appears three times in the HeaderAtom. I used HOC pattern to simplify and minify code. I also used redux hooks like useSelector in some atoms but I removed them in later commits because I realized a better shorter way was to pass props. I put all configurations/properties in the config folder. I moved all styling to the Styles folder which also reduced a lot of repetitive styles and imports. I also used theme colors from Styles/Colors which from my experience makes it easy to change theme colors all over the project. 
+I tried as much as possible to use best practices like DRY - Don't Repeat Yourself, a major example is the PickerAtom that appears three times in the HeaderAtom. I used HOC pattern to simplify and minify code. I also used redux hooks like useSelector in some atoms but I removed them in later commits because I realized a better shorter way was to pass props. I put all configurations/properties in the config folder. I moved all styling to the Styles folder which also reduced a lot of repetitive styles and imports. I also used theme colors from Styles/Colors which from my experience makes it easy to change theme colors all over the project (Maintainability & Scalability). 
 I also used a lot of Guarding (Typescript also helped) to ensure the unexpected are handled properly.
+I used a lot of ES6/ES7 features like const, map, filter, string templates, spread parameters, arrow functions, async and await, destructuring, I used Hooks like useRef, useSelector etc. I used redux also.
+I use git for version control, though I only used the master branch.
 I thank you for these opportunity. This job would mean a lot to me.
 
